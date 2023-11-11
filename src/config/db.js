@@ -6,3 +6,6 @@ const uriLocal = "mongodb://127.0.0.1:27017/tienda";
 mongosee.connect(uriRemota);
 
 module.exports = mongosee;
+
+
+
