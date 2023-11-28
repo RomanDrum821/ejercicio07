@@ -4,15 +4,24 @@ const bcrypt = require("bcryptjs");
 exports.getAllUser = async (req, res) => {
   try {
     const users = await User.find();
-    res.status(200).json({
-      estado: 1,
-      mensaje: "Usuarios encontrados",
-      users: users,
-    });
+    if (users) {
+      res.status(200).json({
+        estado: 1,
+        mensaje: "Usuarios encontrados",
+        users: users,
+      });
+    } else {
+      res.status(404).json({
+        estado: 0,
+        mensaje: "No se encontraron usuarios",
+        users: [],
+      });
+    }
   } catch (error) {
-    res.status(404).json({
+    res.status(500).json({
       estado: 0,
-      mensaje: "No se encontraron usuarios",
+      mensaje: "Ocurrio un error desonocido",
+      users: [],
     });
   }
 };
@@ -25,18 +34,20 @@ exports.getUserByEmail = async (req, res) => {
       res.status(404).json({
         estado: 0,
         mensaje: "Usuario no encontrado",
+        user: [],
       });
     } else {
       res.status(200).json({
         estado: 1,
         mensaje: "Usuario encontrado",
-        user: user,
+        user: [user],
       });
     }
   } catch (error) {
     res.status(500).json({
       estado: 0,
       mensaje: "Ocurrio un error desconocido",
+      user: [],
     });
   }
 };
@@ -49,6 +60,7 @@ exports.addUser = async (req, res) => {
       res.status(400).json({
         estado: 0,
         mensaje: "Faltan parametros",
+        user: [],
       });
     } else {
       const userfound = await User.findOne({
@@ -58,6 +70,7 @@ exports.addUser = async (req, res) => {
         res.status(200).json({
           estado: 0,
           mensaje: "El usuario y/o correo ya existe, favor de utilizar otro",
+          user: [],
         });
       } else {
         const user = await User.create({
@@ -77,6 +90,7 @@ exports.addUser = async (req, res) => {
           res.status(500).json({
             estado: 0,
             mensaje: "Ocurrio un error desconocido",
+            user: [],
           });
         }
       }
@@ -86,6 +100,7 @@ exports.addUser = async (req, res) => {
     res.status(500).json({
       estado: 0,
       mensaje: "Ocurrio un error desconocido",
+      user: [],
     });
   }
 };
@@ -102,12 +117,14 @@ exports.updateUser = async (req, res) => {
       res.status(404).json({
         estado: 0,
         mensaje: "Usuario no encontrado",
+        user: [],
       });
     } else {
       if (!names || !lastnames || !password) {
         res.status(400).json({
           estado: 0,
           mensaje: "Faltan parametros en la solicitud",
+          user: [],
         });
       } else {
         const salt = await bcrypt.genSalt(8);
@@ -119,7 +136,7 @@ exports.updateUser = async (req, res) => {
         res.status(200).json({
           estado: 1,
           mensaje: "Usuario actualizado correctamente",
-          categoria: user,
+          user: user,
         });
       }
     }
@@ -128,6 +145,7 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({
       estado: 0,
       mensaje: "Ocurrio un error desconocido",
+      user: [],
     });
   }
 };
@@ -140,18 +158,21 @@ exports.deleteUser = async (req, res) => {
       res.status(404).json({
         estado: 0,
         mensaje: "No se encontro el usuario",
+        user: [],
       });
     } else {
       await user.deleteOne();
       res.status(200).json({
         estado: 1,
         mensaje: "Se elimino el usuario de manera correcta",
+        user: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       estado: 0,
       mensaje: "Ocurrio un error desconocido",
+      user: [],
     });
   }
 };
